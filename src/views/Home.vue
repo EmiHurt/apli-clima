@@ -52,13 +52,22 @@ export default {
     
     let ddmmyy= arrayfecha[2]+"-"+arrayfecha[1]+"-"+arrayfecha[0]
     
-     try{
-       let datos= await axios.get("http://api.openweathermap.org/data/2.5/forecast?q=rosario&cnt=20&appid=8a56404ca39a5540d2ef81245d52acf1")
-      console.log(datos.data.list[0].dt_txt=ddmmyy),
-      console.log(datos.data.list[0])
-      //console.log(datos)
+      try{
+       let datos= await axios.get(`https://api.weatherbit.io/v2.0/forecast/daily?city=kiev,UA,days=2020-03-03&key=db9797214fa543e1a988d0df149ed8c2`)
+      
+     //console.log(datos.data.data[0].datatime)
      
-         this.clima= await (datos.data.list[0].main.temp)
+
+
+      let temperatura=datos.data.data[0].temp
+      console.log(temperatura)
+      let dias=datos.data.data[0].valid_date=ddmmyy
+      console.log(dias)
+     
+      
+     
+     
+         this.clima= await temperatura,dias
          
 
     
