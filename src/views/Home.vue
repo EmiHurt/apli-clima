@@ -1,4 +1,4 @@
-const APIKEY="8a56404ca39a5540d2ef81245d52acf1"
+
 <template>
 
 <div>
@@ -11,15 +11,15 @@ const APIKEY="8a56404ca39a5540d2ef81245d52acf1"
        locale="es-ar"
        :min="minimo"
        :max="maximo"
-       @change="getClima(fecha)"
+       @change="getbit(fecha)"
        >
 
 
        </v-date-picker>
      </v-card>
-     <v-card color="blue lighten-2" dark>
-       <v-card-text class="display-1 text-xl-center">
-      {{clima}}
+     <v-card color="blue lighten-2 font-weight-black" >
+       <v-card-text class="display-1 text-xl-center ">
+      <p font-weight-black> La fecha elegida es:{{diaelegido}}<br>  El precio de un bitcon es {{precio}}US$</p>
        </v-card-text>
      </v-card>
      
@@ -34,40 +34,52 @@ const APIKEY="8a56404ca39a5540d2ef81245d52acf1"
 
 <script>
 import axios from "axios";
+import { mapMutations } from 'vuex';
+
 
 export default {
   data(){
     return{
-      fecha:new Date().toISOString().substr(10,0),
+      fecha:new Date().toISOString().substr(0,10),
       picker: '',
       minimo: "1984",
-      maximo:new Date().toISOString().substr(10,0),
-      clima:null
+      maximo:new Date().toISOString().substr(0,10),
+      diaelegido:null,
+      precio:null
+     
     }
   },
   methods:{
-    async getClima(dia){
+    ...mapMutations(['mostrarloading','ocultarloading']),
+    async getbit(dia){
+      
+      
     
-    let arrayfecha=dia.split(['-'])
-    
-    let ddmmyy= arrayfecha[2]+"-"+arrayfecha[1]+"-"+arrayfecha[0]
+   
     
       try{
-       let datos= await axios.get(`https://api.weatherbit.io/v2.0/forecast/daily?city=kiev,UA,days=2020-03-03&key=db9797214fa543e1a988d0df149ed8c2`)
-      
-     //console.log(datos.data.data[0].datatime)
-     
 
+        this.mostrarloading({titulo:'acciendo a la informacion', color:'secondary'})
+       let datos= await axios.get(`https://api.coindesk.com/v1/bpi/historical/close.json?start=${dia}&end=${dia}`)
+      var asd=datos.data.bpi
 
-      let temperatura=datos.data.data[0].temp
-      console.log(temperatura)
-      let dias=datos.data.data[0].valid_date=ddmmyy
-      console.log(dias)
-     
+      //HICE ESTE ARREGLO PORQUE AL ENTRAR AL DATO JSON DATOS.DATA.BPI ME ARROJABA LA FECHA Y EL VALOR DEL BITCON PERO DENTRO DE CORCHETES, realice este modificacion para que se vea mejor
+      var myJson = JSON.stringify(asd).split(['-']);
+       let arreglo= myJson[0]+"-"+myJson[1]+"-"+myJson[2]
+       
       
+      
+      
+      
+
      
      
-         this.clima= await temperatura,dias
+  
+     this.diaelegido=  await arreglo[2]+arreglo[3]+arreglo[4]+arreglo[5]+arreglo[6]+arreglo[7]+arreglo[8]+arreglo[9]+arreglo[10]+arreglo[11]
+     this.precio= await arreglo[13]+arreglo[14]+arreglo[15]+arreglo[16]+arreglo[17]
+     
+     
+       
          
 
     
@@ -85,6 +97,7 @@ export default {
        console.log(error);
      }
      finally{
+       this.ocultarloading()
 
      }
       
@@ -94,7 +107,7 @@ export default {
     }
   },
   created(){
-    this.getClima(this.fecha)
+    this.getbit(this.fecha)
   }
   
 }
